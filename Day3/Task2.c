@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <regex.h>
+#include <stdbool.h>
 
 int multiply(char *input){
     char copy[15];
     strcpy(copy,input);
-    printf("%s\n", copy);
     strtok(copy, "(");
     int number1 = atoi(strtok(NULL, ","));
     int number2 = atoi(strtok(NULL, ")"));
@@ -17,7 +17,7 @@ int multiply(char *input){
 void importList(char *lineptr, char **list, FILE *fptr){
     int line = 0;
     int validCount = 0;
-    const char *pattern = "mul\\([0-9]+,[0-9]+\\)"; // Regex to match one or more digits
+    const char *pattern = "mul\\([0-9]+,[0-9]+\\)|do\\(\\)|don't\\(\\)"; // Regex to match one or more digits
     //const char *text = "The numbers are 42 and 100.";
     regex_t regex;
     regmatch_t matches[100]; // Array to store match information
@@ -58,8 +58,12 @@ int main(){
     importList(lineptr, list, fptr);
     printf("%s\n", list[0]);
     int len = 0,sum = 0;
+    bool doo = true;
     while(list[len] != 0){
-        sum += multiply(list[len]);
+        printf("%s\n",list[len]);
+        if(strcmp(list[len],"do()\0") == 0) doo = true;
+        else if(strcmp(list[len],"don't()\0") == 0) doo = false;
+        else if(doo) sum += multiply(list[len]);
         len++;
         printf("sum: %d\n", sum);
     }
